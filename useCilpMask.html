@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+</head>
+<style type="text/css">
+	html, body {
+		margin: 0;
+		padding: 0;
+		width: 100%;
+		height: 100%;
+		background: #001122;
+		font-size: 0;
+		line-height: 0;
+	}
+</style>
+<body>
+	<svg width="100%" height="100%" viewBox="-400 -300 800 600" preserveAspectRatio="xMidYid slice">
+	<defs>
+		<polygon id="star" points="0 -10 2 -2 10 0 2 2 0 10 -2 2 -10 0 -2 -2" fill="white"></polygon>
+	</defs>
+	<g id="real">
+		<!-- 创建星星的组 -->
+		<g id="star-group"></g>	
+		<!-- 创建一个月亮 -->
+		<g id="moon-group">
+			<!-- 创建月亮的mask -->
+			<mask id="moon-mask">
+				<circle cx="-250" cy="-150" r="100" fill="white"></circle>
+				<circle cx="-200" cy="-200" r="100" fill="black"></circle>
+			</mask>
+			<!-- 使用mask裁切出月亮 -->
+			<circle cx="-250" cy="-150" r="100" fill="yellow" mask="url(#moon-mask)"></circle>
+		</g>
+		<!-- 画一个灯塔 -->
+		<g id="light-house" transform="translate(250, 0)">
+			<defs>
+			<!-- 设置灯塔身体的渐变色 -->
+				<linearGradient id="tower" x1="0" y1="0" x2="1" y2="0">
+					<stop offset="0" stop-color="#999"></stop>
+					<stop offset="1" stop-color="#333"></stop>
+				</linearGradient>
+				<!-- 给灯光创建一个渐变色 -->
+				<radialGradient id="light-color" cx="0.5" cy="0.5" r="0.5">
+					<stop offset="0" stop-color="rgba(255,255,255,.8)"></stop>
+					<stop offset="1" stop-color="rgba(255,255,255,0)"></stop>
+				</radialGradient>
+				<!-- 把三角形房子clipPath里面，为后面椭圆取交集备用 -->
+				<clipPath id="light-clip">
+					<polygon points="0 0 -301 -15 -301 15" fill="rgba(255,0,0,.5)">
+						<!-- 添加动画 -->
+						<animateTransform attributeName="transform" attributeType="XML" type="rotate" form="0" to="360" dur="10s" repeatCount="indefinite"></animateTransform>
+					</polygon>
+					<circle cx="0" cy="0" r="4"></circle>
+				</clipPath>
+			</defs>
+			<polygon points="0 0 5 50 -5 50" fill="url(#tower)"></polygon>
+			<!-- clip-path="url(#light-clip)"取三角形和椭圆的交集 -->
+			<ellipse cx="0" cy="0" rx="300" ry="100" fill="url(#light-color)" clip-path="url(#light-clip)"></ellipse>
+		</g>
+	</g>
+	<!-- 湖面反射的 -->
+	<g id="reflact" transform="translate(0 100)" mask="url(#fading)">
+		<!-- 绘制线性渐变 -->
+		<defs>
+			<linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="rgba(255,255,255,.3)"></stop>
+			<stop offset="0.5" stop-color="rgba(255,255,255,0)"></stop>
+			</linearGradient><mask id="fading">
+			<rect x="-400" y="-50" width="800" height="300" fill="url(#fade)"></rect>
+		</mask></defs>
+		<use xlink:href="#real" transform="scale(1,-1)" />
+	</g>
+	<line x1="-400" y1="50" x2="400" y2="50" stroke="white"></line>
+	</svg>
+</body>
+<script type="text/javascript">
+	var SVG_NS = "http://www.w3.org/2000/svg";
+	var XLINK_NS = "http://www.w3.org/1999/xlink";
+
+	var paper = document.querySelector('svg');
+	renderStar();
+
+	function use(origin) {
+		var _use = document.createElementNS(SVG_NS,'use');
+		_use.setAttributeNS(XLINK_NS, 'xlink:href', '#' + origin.id);
+		return _use;
+	}
+
+	// 创建随机数
+	function random(min, max) {
+		return min + (max - min) * Math.random();
+	}
+
+	function renderStar() {
+		var starRef = document.getElementById('star');
+		var starGroup = document.getElementById('star-group');
+		var starCount = 200;
+
+		while (starCount--) {
+			star = use(starRef);
+			star.setAttribute('opacity', random(0.1, 0.4));  //让星星的透明度随机
+			star.setAttribute('transform', 'translate(' + random(-400, 400) + ',' + random(-300, 50) + ') ' + 'scale(' + random(0.1, 0.6) +')');  //让星星随机偏移，随机缩放
+			starGroup.appendChild(star);  //画出200个星星
+		}
+	}
+</script>
+</html>
